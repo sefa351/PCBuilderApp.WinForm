@@ -1,0 +1,17 @@
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilder.Business.deps.json
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilder.Business.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilder.Business.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilder.Entities.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilderDataAccess.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilder.Entities.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\bin\Debug\net8.0\PCBuilderDataAccess.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.csproj.AssemblyReference.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.AssemblyInfo.cs
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilde.18CA7D85.Up2Date
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\refint\PCBuilder.Business.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\ref\PCBuilder.Business.dll

@@ -1,0 +1,11 @@
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\bin\Debug\net8.0\PCBuilder.Entities.deps.json
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\bin\Debug\net8.0\PCBuilder.Entities.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\bin\Debug\net8.0\PCBuilder.Entities.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.AssemblyInfoInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.AssemblyInfo.cs
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\refint\PCBuilder.Entities.dll
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.pdb
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\ref\PCBuilder.Entities.dll

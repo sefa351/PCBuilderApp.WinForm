@@ -1,0 +1,214 @@
+﻿@page "/hazir-sistemler"
+@using PCBuilder.Entities
+@using PCBuilder.Business
+@inject ProductService ProductService
+@inject SystemTransferService TransferService
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<PageTitle>Hazır Sistemler | DreamPC</PageTitle>
+
+<style>
+    body {
+        background-color: #0f0c29; /* Çok koyu mor/lacivert */
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .system-card {
+        background: linear-gradient(145deg, #1a1a2e, #16213e);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 210, 211, 0.2);
+            border-color: #00d2d3;
+        }
+
+    .card-header-custom {
+        background: rgba(0,0,0,0.2);
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .price-tag {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #2ecc71;
+    }
+
+    .feature-list {
+        font-size: 0.9rem;
+        color: #b2bec3;
+        list-style: none;
+        padding: 0;
+        margin: 15px 0;
+    }
+
+        .feature-list li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+            .feature-list li::before {
+                content: "🔹";
+                margin-right: 10px;
+                font-size: 0.8rem;
+            }
+
+    /* Modal Tasarımı */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content-custom {
+        background: #1e272e;
+        padding: 30px;
+        border-radius: 15px;
+        border: 1px solid #ffd32a;
+        width: 90%;
+        max-width: 800px;
+        box-shadow: 0 0 50px rgba(255, 211, 42, 0.2);
+        position: relative;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">🎮 Hazır Oyuncu Sistemleri</h1>
+        <p class="text-muted">Profesyoneller tarafından toplanmış, test edilmiş performans canavarları.</p>
+    </div>
+
+    <div class="row g-4">
+        @if (systems == null)
+        {
+            <p class="text-center text-white">Sistemler yükleniyor...</p>
+        }
+        else
+        {
+            @foreach (var sys in systems)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="system-card" @onclick="() => OpenDetail(sys)">
+                        <div class="card-header-custom">
+                            <h4 class="fw-bold" style="color: #ff9f43">@sys.SystemName</h4>
+                            <small class="text-muted">@sys.Description</small>
+                        </div>
+                        <div class="p-3 flex-grow-1">
+                            <h3 class="price-tag mb-3">@sys.DiscountedPrice.ToString("C2")</h3>
+                            <ul class="feature-list">
+                                <li>@sys.Cpu.Name</li>
+                                <li>@sys.Gpu.Name</li>
+                                <li>@sys.Ram.Capacity GB RAM</li>
+                                <li>@sys.Storage.Capacity SSD</li>
+                            </ul>
+                        </div>
+                        <div class="p-3 pt-0">
+                            <button class="btn w-100 fw-bold" style="background-color: #00d2d3; color: #000;">Detayları İncele</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@if (selectedSystem != null)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal-content-custom" @onclick:stopPropagation>
+            <button class="close-btn" @onclick="CloseModal">✕</button>
+
+            <h3 class="fw-bold mb-4" style="color: #ff9f43">@selectedSystem.SystemName - Teknik Detaylar</h3>
+
+            <div class="row">
+                <div class="col-md-7">
+                    <ul class="list-unstyled text-white" style="line-height: 2.5;">
+                        <li>🔹 <strong class="text-light">İşlemci:</strong> @selectedSystem.Cpu.Name (@selectedSystem.Cpu.CoreCount Çekirdek)</li>
+                        <li>🔹 <strong class="text-light">Anakart:</strong> @selectedSystem.Mb.Name (@selectedSystem.Mb.SocketType)</li>
+                        <li>🔹 <strong class="text-light">RAM Bellek:</strong> @selectedSystem.Ram.Name (@selectedSystem.Ram.Capacity GB)</li>
+                        <li>🔹 <strong class="text-light">Ekran Kartı:</strong> @selectedSystem.Gpu.Name (@selectedSystem.Gpu.Vram GB)</li>
+
+                        <li>🔹 <strong class="text-light">Depolama (SSD):</strong> @selectedSystem.Storage.Name (@selectedSystem.Storage.Capacity)</li>
+                        <li>🔹 <strong class="text-light">Kasa:</strong> @selectedSystem.Case.Name</li>
+                        <li>🔹 <strong class="text-light">Güç Kaynağı:</strong> @selectedSystem.Psu.Name (@selectedSystem.Psu.Wattage W)</li>
+                    </ul>
+                </div>
+                <div class="col-md-5 text-end d-flex flex-column justify-content-center border-start border-secondary">
+                    <h2 class="fw-bold" style="color: #2ecc71; font-size: 2.5rem;">@selectedSystem.DiscountedPrice.ToString("C2")</h2>
+                    <p class="text-muted small">Hazır Sistem İndirimi Uygulandı.</p>
+
+                    <div class="alert alert-info mt-3 text-start small">
+                        🚀 Aynı gün kargo ve ücretsiz montaj!
+                    </div>
+
+                    <div class="mt-auto gap-2 d-flex justify-content-end">
+                        <button class="btn btn-secondary" @onclick="CloseModal">Kapat</button>
+                        <button class="btn btn-warning fw-bold" @onclick="TransferToBuilder">🛒 Satın Al</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    List<PrebuiltSystem> systems = new();
+    PrebuiltSystem? selectedSystem = null;
+
+    protected override void OnInitialized()
+    {
+        systems = ProductService.GetPrebuiltSystems();
+    }
+
+    void OpenDetail(PrebuiltSystem sys)
+    {
+        selectedSystem = sys;
+    }
+
+    void CloseModal()
+    {
+        selectedSystem = null;
+    }
+
+    void TransferToBuilder()
+    {
+        if (selectedSystem != null)
+        {
+            // Seçilen sistemi Servise yükle
+            TransferService.SelectedSystem = selectedSystem;
+            // Ana sayfaya (Builder) yönlendir
+            NavManager.NavigateTo("/");
+        }
+    }
+}

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PCBuilder.Entities\PCBuilder.Entities.csproj" />
+    <ProjectReference Include="..\PCBuilderDataAccess\PCBuilderDataAccess.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,524 @@
+﻿@page "/"
+@using PCBuilder.Entities
+@using PCBuilder.Business
+@inject ProductService _service
+@inject SystemTransferService TransferService
+@rendermode InteractiveServer
+
+<PageTitle>PC Toplama Sihirbazı</PageTitle>
+
+<style>
+    /* --- 1. GENEL TASARIM --- */
+    body {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e0e0e0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* --- 2. GLASS PANEL (CAM EFEKTİ) --- */
+    .glass-panel {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .section-title {
+        color: #00d2d3;
+        border-bottom: 2px solid rgba(0, 210, 211, 0.3);
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    /* --- 3. INPUTLAR VE BUTONLAR --- */
+    .custom-select {
+        background-color: #0f3460;
+        color: white;
+        border: 1px solid #16213e;
+        border-radius: 8px;
+        padding: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .custom-select:focus {
+            border-color: #e94560;
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+
+        .custom-select:disabled {
+            background-color: #1a1a2e;
+            color: #555;
+            border-color: #333;
+            cursor: not-allowed;
+        }
+
+    .step-label {
+        color: #ff9f43;
+        font-weight: bold;
+        margin-top: 15px;
+        display: block;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    .cart-item {
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 10px 0;
+        font-family: 'Consolas', monospace;
+    }
+
+    .total-price {
+        color: #2ecc71;
+        text-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+        font-size: 2.5rem;
+    }
+
+    .status-box {
+        border-radius: 10px;
+        padding: 15px;
+        font-weight: bold;
+        margin-top: 20px;
+        color: white;
+    }
+
+    .alert-secondary {
+        background-color: #34495e;
+    }
+
+    .alert-success {
+        background-color: #27ae60;
+    }
+
+    .alert-danger {
+        background-color: #c0392b;
+    }
+
+    /* --- 4. MODAL (AÇILIR PENCERE) TASARIMI --- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85); /* Arka planı karart */
+        backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content {
+        background: linear-gradient(145deg, #16213e, #0f3460);
+        border: 1px solid rgba(255,255,255,0.1);
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 0 50px rgba(0, 210, 211, 0.2);
+        animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        color: #2ecc71;
+        margin-bottom: 20px;
+        animation: popIn 0.5s ease-back;
+    }
+
+    /* Animasyonlar */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    @@keyframes scaleUp {
+        from {
+            transform: scale(0.8);
+            opacity: 0;
+        }
+
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @@keyframes popIn {
+        0% {
+            transform: scale(0);
+        }
+
+        80% {
+            transform: scale(1.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-white">
+            <span style="color: #e94560;">🚀 Dream</span>PC Builder
+        </h1>
+        <p class="text-muted">Hayalindeki bilgisayarı profesyonelce topla.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="glass-panel p-4 h-100">
+                <h4 class="section-title">🛠️ Donanım Seçimi</h4>
+
+                <label class="step-label">1. İşlemci (CPU)</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnCpuChanged"
+                        value="@(selectedCpu?.Id ?? -1)">
+                    <option value="-1">Seçiniz...</option>
+                    @foreach (var cpu in cpuList)
+                    {
+                        <option value="@cpu.Id">@cpu.Name</option>
+                    }
+                </select>
+
+                <label class="step-label">2. Anakart</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnMbChanged"
+                        disabled="@(selectedCpu == null)"
+                        value="@(selectedMb?.Id ?? -1)">
+                    <option value="-1">@(selectedCpu == null ? "Önce İşlemci Seçin" : "Seçiniz...")</option>
+                    @foreach (var mb in mbList)
+                    {
+                        <option value="@mb.Id">@mb.Name</option>
+                    }
+                </select>
+
+                <label class="step-label">3. RAM Bellek</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnRamChanged"
+                        disabled="@(selectedMb == null)"
+                        value="@(selectedRam?.Id ?? -1)">
+                    <option value="-1">@(selectedMb == null ? "Önce Anakart Seçin" : "Seçiniz...")</option>
+                    @foreach (var ram in ramList)
+                    {
+                        <option value="@ram.Id">@ram.Name</option>
+                    }
+                </select>
+
+                <label class="step-label">4. Ekran Kartı</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnGpuChanged"
+                        disabled="@(selectedMb == null)"
+                        value="@(selectedGpu?.Id ?? -1)">
+                    <option value="-1">@(selectedMb == null ? "Önce Anakart Seçin" : "Seçiniz...")</option>
+                    @foreach (var gpu in gpuList)
+                    {
+                        <option value="@gpu.Id">@gpu.Name</option>
+                    }
+                </select>
+
+                <label class="step-label">5. Depolama (SSD)</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnStorageChanged"
+                        disabled="@(selectedMb == null)"
+                        value="@(selectedStorage?.Id ?? -1)">
+                    <option value="-1">@(selectedMb == null ? "Önce Anakart Seçin" : "Seçiniz...")</option>
+                    @foreach (var ssd in storageList)
+                    {
+                        <option value="@ssd.Id">@ssd.Name (@ssd.Capacity)</option>
+                    }
+                </select>
+
+                <label class="step-label">6. Kasa</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnCaseChanged"
+                        disabled="@(selectedGpu == null)"
+                        value="@(selectedCase?.Id ?? -1)">
+                    <option value="-1">@(selectedGpu == null ? "Önce Ekran Kartı Seçin" : "Seçiniz...")</option>
+                    @foreach (var c in caseList)
+                    {
+                        <option value="@c.Id">@c.Name (@c.FormFactor)</option>
+                    }
+                </select>
+
+                <label class="step-label">7. Güç Kaynağı</label>
+                <select class="form-select custom-select shadow-sm" @onchange="OnPsuChanged"
+                        disabled="@(selectedGpu == null || selectedCpu == null)"
+                        value="@(selectedPsu?.Id ?? -1)">
+                    <option value="-1">@(selectedGpu == null ? "Önce Tüm Ana Parçaları Seçin" : "Seçiniz...")</option>
+                    @foreach (var psu in psuList)
+                    {
+                        <option value="@psu.Id">@psu.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="glass-panel p-4 h-100 position-relative">
+                <h4 class="section-title">🛒 Sistem Özeti</h4>
+
+                <div class="cart-list mt-3">
+                    @if (sepetLines.Count == 0)
+                    {
+                        <div class="text-center text-muted py-5">
+                            <h1 style="font-size: 3rem;">🖥️</h1>
+                            <p>Henüz parça seçilmedi.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var item in sepetLines)
+                        {
+                            <div class="d-flex justify-content-between cart-item">
+                                <span>@item.Key</span>
+                                <span style="color: #00d2d3;">@item.Value</span>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="mt-5 pt-3 border-top border-secondary">
+                    <div class="text-end">
+                        <small class="text-muted d-block mb-1">TOPLAM TUTAR</small>
+                        <h2 class="total-price fw-bold">@totalPrice.ToString("C2")</h2>
+                    </div>
+
+                    <div class="@statusClass status-box text-center shadow">
+                        @statusMessage
+                    </div>
+
+                    @if (statusClass == "alert-success" && isSystemComplete)
+                    {
+                        <button class="btn btn-lg w-100 mt-3 fw-bold"
+                                @onclick="SubmitOrder"
+                                style="background: linear-gradient(45deg, #e94560, #ff9f43); color: white; border:none; transition: transform 0.2s;">
+                            🎁 SİPARİŞİ ONAYLA
+                        </button>
+                    }
+                    else if (totalPrice > 0)
+                    {
+                        <div class="mt-3 text-center text-muted fst-italic">
+                            <small>Siparişi tamamlamak için tüm parçaları seçmelisiniz.</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showSuccessModal)
+{
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <div class="success-icon">✅</div>
+            <h2 class="fw-bold text-white mb-3">Siparişiniz Alındı!</h2>
+            <p class="text-muted mb-4">Sisteminiz başarıyla oluşturuldu ve onay için sıraya alındı.</p>
+
+            <div class="bg-dark p-3 rounded mb-4 border border-secondary">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-secondary">Sipariş No:</span>
+                    <span class="fw-bold text-white">#TR-2026-@(new Random().Next(1000, 9999))</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-secondary">Toplam Tutar:</span>
+                    <span class="fw-bold" style="color: #2ecc71;">@totalPrice.ToString("C2")</span>
+                </div>
+            </div>
+
+            <button class="btn btn-outline-light px-5 py-2" @onclick="CloseModal">
+                Kapat ve Yeni Sistem Topla
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    // --- LİSTELER ---
+    List<Case> caseList = new();
+    List<Motherboard> mbList = new();
+    List<CPU> cpuList = new();
+    List<RAM> ramList = new();
+    List<GPU> gpuList = new();
+    List<Storage> storageList = new();
+    List<PowerSupply> psuList = new();
+
+    // --- SEÇİLEN PARÇALAR ---
+    Case? selectedCase; Motherboard? selectedMb; CPU? selectedCpu;
+    RAM? selectedRam; GPU? selectedGpu; Storage? selectedStorage; PowerSupply? selectedPsu;
+
+    // --- EKRAN DEĞİŞKENLERİ ---
+    List<KeyValuePair<string, string>> sepetLines = new();
+    decimal totalPrice = 0;
+    string statusMessage = "Sistem Toplanıyor...";
+    string statusClass = "alert-secondary";
+    bool isSystemComplete = false; // Sistem tamam mı kontrolü
+
+    // --- MODAL KONTROLÜ ---
+    bool showSuccessModal = false;
+
+    @inject SystemTransferService TransferService
+
+    protected override void OnInitialized()
+    {
+        cpuList = _service.GetCPUs();
+        caseList = _service.GetCases();
+        psuList = _service.GetPSUs();
+        storageList = _service.GetStorages();
+
+        // 4. EĞER HAZIR SİSTEMDEN GELİNDİYSE (Transfer)
+        if (TransferService.SelectedSystem != null)
+        {
+            var sys = TransferService.SelectedSystem;
+
+            // Manuel tetiklemeler
+            selectedCpu = sys.Cpu;
+            if (selectedCpu != null) mbList = _service.GetCompatibleMotherboards(selectedCpu!.Id);
+
+            selectedMb = sys.Mb;
+            if (selectedMb != null)
+            {
+                ramList = _service.GetCompatibleRAMs(selectedMb!.Id);
+                gpuList = _service.GetCompatibleGPUs(selectedMb!.Id);
+            }
+
+            selectedRam = sys.Ram;
+            selectedGpu = sys.Gpu;
+            selectedPsu = sys.Psu;
+            selectedCase = sys.Case;       
+            selectedStorage = sys.Storage; 
+           
+
+            TransferService.SelectedSystem = null; 
+        }
+        UpdateCart();
+    }
+
+    // --- BUTON TIKLAMA FONKSİYONLARI ---
+    void SubmitOrder()
+    {
+        // Butona basınca Modalı aç
+        showSuccessModal = true;
+    }
+
+    void CloseModal()
+    {
+        // Modalı kapat ve sayfayı yenile (veya sıfırla)
+        showSuccessModal = false;
+
+        // İstersen burada tüm seçimleri null yapıp sıfırlayabiliriz
+        // selectedCpu = null; selectedMb = null; ... UpdateCart();
+        // Ama şimdilik sadece kapatalım.
+    }
+
+    // --- DEĞİŞİM METOTLARI ---
+    void OnCpuChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedCpu = cpuList.FirstOrDefault(c => c.Id == id);
+        selectedMb = null; selectedRam = null; selectedGpu = null; selectedStorage = null; selectedCase = null; selectedPsu = null;
+        mbList.Clear(); ramList.Clear(); gpuList.Clear();
+        if (selectedCpu != null) mbList = _service.GetCompatibleMotherboards(selectedCpu.Id);
+        UpdateCart();
+    }
+    void OnMbChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedMb = mbList.FirstOrDefault(m => m.Id == id);
+        selectedRam = null; selectedGpu = null; selectedStorage = null; selectedCase = null; selectedPsu = null;
+        ramList.Clear(); gpuList.Clear();
+        if (selectedMb != null) { ramList = _service.GetCompatibleRAMs(selectedMb.Id); gpuList = _service.GetCompatibleGPUs(selectedMb.Id); }
+        UpdateCart();
+    }
+    void OnRamChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedRam = ramList.FirstOrDefault(r => r.Id == id); UpdateCart();
+    }
+    void OnGpuChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedGpu = gpuList.FirstOrDefault(g => g.Id == id);
+        selectedCase = null; selectedPsu = null; UpdateCart();
+    }
+    void OnStorageChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedStorage = storageList.FirstOrDefault(s => s.Id == id); UpdateCart();
+    }
+    void OnCaseChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedCase = caseList.FirstOrDefault(c => c.Id == id); UpdateCart();
+    }
+    void OnPsuChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedPsu = psuList.FirstOrDefault(p => p.Id == id); UpdateCart();
+    }
+
+    void UpdateCart()
+    {
+        sepetLines.Clear(); totalPrice = 0; int totalTDP = 0;
+        statusMessage = "Sistem Toplanıyor..."; statusClass = "alert-secondary";
+        isSystemComplete = false;
+
+        void AddToCart(string type, Product? p)
+        {
+            if (p != null)
+            {
+                sepetLines.Add(new KeyValuePair<string, string>($"{type}: {p.Name}", $"{p.Price:C2}"));
+                totalPrice += p.Price;
+                if (p is CPU c) totalTDP += c.TDP;
+                if (p is GPU g) totalTDP += g.TDP;
+            }
+        }
+
+        AddToCart("İŞLEMCİ", selectedCpu); AddToCart("ANAKART", selectedMb); AddToCart("RAM", selectedRam);
+        AddToCart("EKRAN KARTI", selectedGpu); AddToCart("SSD", selectedStorage); AddToCart("KASA", selectedCase); AddToCart("GÜÇ KAYNAĞI", selectedPsu);
+
+        if (totalTDP > 0) totalTDP += 100;
+
+        // KONTROLLER
+        if (selectedCase != null && selectedMb != null && selectedCase.FormFactor == "Micro-ATX" && selectedMb.FormFactor == "ATX")
+        {
+            statusMessage = "⛔ HATA: ATX Anakart, Micro-ATX Kasaya Sığmaz!"; statusClass = "alert-danger"; return;
+        }
+        
+        if (selectedMb != null && selectedStorage != null && selectedStorage.Type!.Contains("NVMe") && !selectedMb.HasM2Slot)
+        {
+            statusMessage = "⛔ HATA: Bu anakartta M.2 yuvası yok!"; statusClass = "alert-danger"; return;
+        }
+        if (selectedGpu != null && selectedGpu.Name.Contains("4090"))
+        {
+            int psuWatt = selectedPsu?.Wattage ?? 0;
+            if (psuWatt > 0 && psuWatt < 850)
+            {
+                statusMessage = "⛔ KRİTİK: RTX 4090 için en az 850W PSU gerekir!"; statusClass = "alert-danger"; return;
+            }
+        }
+
+        isSystemComplete = selectedCpu != null && selectedMb != null && selectedRam != null &&
+                           selectedGpu != null && selectedStorage != null && selectedCase != null && selectedPsu != null;
+
+        if (!isSystemComplete)
+        {
+            statusMessage = $"Sistem Toplanıyor... (Tüketim: ~{totalTDP}W)"; statusClass = "alert-secondary";
+        }
+        else
+        {
+            if (selectedPsu is not null)
+            {
+                if (selectedPsu.Wattage >= totalTDP)
+                {
+                    statusMessage = $"✅ SİSTEM HAZIR! (Tüketim: {totalTDP}W / PSU: {selectedPsu!.Wattage}W)"; statusClass = "alert-success";
+                }
+                else
+                {
+                    statusMessage = $"⛔ GÜÇ YETERSİZ! ({totalTDP}W gerekli)"; statusClass = "alert-danger";
+                }
+            }
+        }
+    }
+}
