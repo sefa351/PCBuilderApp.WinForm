@@ -5,6 +5,7 @@ C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\ob
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.AssemblyInfoInputs.cache
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.AssemblyInfo.cs
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.sourcelink.json
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.dll
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\refint\PCBuilder.Entities.dll
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Entities\obj\Debug\net8.0\PCBuilder.Entities.pdb

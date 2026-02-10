@@ -19,5 +19,6 @@ public class PrebuiltSystem
     public GPU Gpu { get; set; } = new();
     public PowerSupply Psu { get; set; } = new();
     public Storage Storage { get; set; } = new(); 
-    public Case Case { get; set; } = new();       
+    public Case Case { get; set; } = new();
+    public string? ImageUrl { get; set; } //  boş olabilir 
 }

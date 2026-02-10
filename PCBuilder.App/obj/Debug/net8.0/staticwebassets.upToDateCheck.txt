@@ -2,3 +2,6 @@ wwwroot\app.css
 wwwroot\bootstrap\bootstrap.min.css
 wwwroot\bootstrap\bootstrap.min.css.map
 wwwroot\favicon.png
+wwwroot\images\Kasa1.png
+wwwroot\images\Kasa2.png
+wwwroot\images\Kasa3.png

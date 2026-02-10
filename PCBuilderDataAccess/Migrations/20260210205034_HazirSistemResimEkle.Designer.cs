@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PCBuilderDataAccess;
+using PCBuilder.DataAccess;
 
 #nullable disable
 
 namespace PCBuilderDataAccess.Migrations
 {
     [DbContext(typeof(PCBuilderContext))]
-    [Migration("20260122171209_AddNewHardwares")]
-    partial class AddNewHardwares
+    [Migration("20260210205034_HazirSistemResimEkle")]
+    partial class HazirSistemResimEkle
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -62,6 +62,39 @@ namespace PCBuilderDataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CPUs", (string)null);
+                });
+
+            modelBuilder.Entity("PCBuilder.Entities.Case", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FormFactor")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasGlassPanel")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cases");
                 });
 
             modelBuilder.Entity("PCBuilder.Entities.GPU", b =>
@@ -113,6 +146,9 @@ namespace PCBuilderDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("HasM2Slot")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -149,7 +185,6 @@ namespace PCBuilderDataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Efficiency")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
@@ -170,6 +205,68 @@ namespace PCBuilderDataAccess.Migrations
                     b.ToTable("PowerSupplies");
                 });
 
+            modelBuilder.Entity("PCBuilder.Entities.PrebuiltSystem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CpuId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountedPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("GpuId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MbId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PsuId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RamId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StorageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SystemName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CaseId");
+
+                    b.HasIndex("CpuId");
+
+                    b.HasIndex("GpuId");
+
+                    b.HasIndex("MbId");
+
+                    b.HasIndex("PsuId");
+
+                    b.HasIndex("RamId");
+
+                    b.HasIndex("StorageId");
+
+                    b.ToTable("PrebuiltSystems");
+                });
+
             modelBuilder.Entity("PCBuilder.Entities.RAM", b =>
                 {
                     b.Property<int>("Id")
@@ -182,7 +279,7 @@ namespace PCBuilderDataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("CapacityGB")
+                    b.Property<int>("Capacity")
                         .HasColumnType("int");
 
                     b.Property<int>("FrequencyMHz")
@@ -205,6 +302,101 @@ namespace PCBuilderDataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RAMs");
+                });
+
+            modelBuilder.Entity("PCBuilder.Entities.Storage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Brand")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Capacity")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ReadSpeed")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Storages");
+                });
+
+            modelBuilder.Entity("PCBuilder.Entities.PrebuiltSystem", b =>
+                {
+                    b.HasOne("PCBuilder.Entities.Case", "Case")
+                        .WithMany()
+                        .HasForeignKey("CaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.CPU", "Cpu")
+                        .WithMany()
+                        .HasForeignKey("CpuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.GPU", "Gpu")
+                        .WithMany()
+                        .HasForeignKey("GpuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.Motherboard", "Mb")
+                        .WithMany()
+                        .HasForeignKey("MbId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.PowerSupply", "Psu")
+                        .WithMany()
+                        .HasForeignKey("PsuId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.RAM", "Ram")
+                        .WithMany()
+                        .HasForeignKey("RamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PCBuilder.Entities.Storage", "Storage")
+                        .WithMany()
+                        .HasForeignKey("StorageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Case");
+
+                    b.Navigation("Cpu");
+
+                    b.Navigation("Gpu");
+
+                    b.Navigation("Mb");
+
+                    b.Navigation("Psu");
+
+                    b.Navigation("Ram");
+
+                    b.Navigation("Storage");
                 });
 #pragma warning restore 612, 618
         }

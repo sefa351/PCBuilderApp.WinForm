@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PCBuilderDataAccess")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d234e63bb7da21679e0aa4a2568fb1e9483bdd6")]
 [assembly: System.Reflection.AssemblyProductAttribute("PCBuilderDataAccess")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PCBuilderDataAccess")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

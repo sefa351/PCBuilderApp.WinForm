@@ -33,6 +33,29 @@
             border-color: #00d2d3;
         }
 
+    /* --- YENİ EKLENEN RESİM STİLİ --- */
+    .card-img-wrapper {
+        height: 220px; /* Resim yüksekliği sabit olsun */
+        background-color: white; /* Resim şeffafsa arkası beyaz olsun */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+        .card-img-wrapper img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain; /* Resmi kesmeden sığdır */
+            transition: transform 0.5s ease;
+        }
+
+    .system-card:hover .card-img-wrapper img {
+        transform: scale(1.05); /* Mouse gelince resim hafif büyüsün */
+    }
+    /* -------------------------------- */
+
     .card-header-custom {
         background: rgba(0,0,0,0.2);
         padding: 20px;
@@ -86,7 +109,7 @@
         border-radius: 15px;
         border: 1px solid #ffd32a;
         width: 90%;
-        max-width: 800px;
+        max-width: 900px; /* Biraz genişlettim */
         box-shadow: 0 0 50px rgba(255, 211, 42, 0.2);
         position: relative;
     }
@@ -100,6 +123,7 @@
         color: white;
         font-size: 1.5rem;
         cursor: pointer;
+        z-index: 10;
     }
 </style>
 
@@ -120,6 +144,17 @@
             {
                 <div class="col-lg-4 col-md-6">
                     <div class="system-card" @onclick="() => OpenDetail(sys)">
+
+                        <div class="card-img-wrapper">
+                            @if (!string.IsNullOrEmpty(sys.ImageUrl))
+                            {
+                                <img src="@sys.ImageUrl" alt="@sys.SystemName" />
+                            }
+                            else
+                            {
+                                <span style="font-size: 4rem;">🖥️</span>
+                            }
+                        </div>
                         <div class="card-header-custom">
                             <h4 class="fw-bold" style="color: #ff9f43">@sys.SystemName</h4>
                             <small class="text-muted">@sys.Description</small>
@@ -152,7 +187,7 @@
             <h3 class="fw-bold mb-4" style="color: #ff9f43">@selectedSystem.SystemName - Teknik Detaylar</h3>
 
             <div class="row">
-                <div class="col-md-7">
+                <div class="col-md-6">
                     <ul class="list-unstyled text-white" style="line-height: 2.5;">
                         <li>🔹 <strong class="text-light">İşlemci:</strong> @selectedSystem.Cpu.Name (@selectedSystem.Cpu.CoreCount Çekirdek)</li>
                         <li>🔹 <strong class="text-light">Anakart:</strong> @selectedSystem.Mb.Name (@selectedSystem.Mb.SocketType)</li>
@@ -164,7 +199,15 @@
                         <li>🔹 <strong class="text-light">Güç Kaynağı:</strong> @selectedSystem.Psu.Name (@selectedSystem.Psu.Wattage W)</li>
                     </ul>
                 </div>
-                <div class="col-md-5 text-end d-flex flex-column justify-content-center border-start border-secondary">
+
+                <div class="col-md-6 text-center d-flex flex-column justify-content-center border-start border-secondary ps-4">
+
+                    @if (!string.IsNullOrEmpty(selectedSystem.ImageUrl))
+                    {
+                        <div class="mb-4 bg-white rounded p-2">
+                            <img src="@selectedSystem.ImageUrl" class="img-fluid" style="max-height: 250px; object-fit: contain;" alt="@selectedSystem.SystemName" />
+                        </div>
+                    }
                     <h2 class="fw-bold" style="color: #2ecc71; font-size: 2.5rem;">@selectedSystem.DiscountedPrice.ToString("C2")</h2>
                     <p class="text-muted small">Hazır Sistem İndirimi Uygulandı.</p>
 

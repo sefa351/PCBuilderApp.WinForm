@@ -148,16 +148,17 @@ public class ProductRepository
         // ==========================================
         // 7. KASA (CASE) (YENİLER EKLENDİ)
         // ==========================================
-        products.Add(new Case { Id = 401, Name = "Corsair iCUE 4000D", Brand = "Corsair", Price = 4500, FormFactor = "ATX", MaxGpuLength = 360, HasGlassPanel = true });
-        products.Add(new Case { Id = 402, Name = "MSI MAG FORGE M100R", Brand = "MSI", Price = 2200, FormFactor = "Micro-ATX", MaxGpuLength = 300, HasGlassPanel = true });
-        products.Add(new Case { Id = 403, Name = "NZXT H5 Flow", Brand = "NZXT", Price = 3800, FormFactor = "ATX", MaxGpuLength = 365, HasGlassPanel = true });
+        products.Add(new Case { Id = 401, Name = "Corsair iCUE 4000D", Brand = "Corsair", Price = 4500, FormFactor = "ATX",  HasGlassPanel = true });
+        products.Add(new Case { Id = 402, Name = "MSI MAG FORGE M100R", Brand = "MSI", Price = 2200, FormFactor = "Micro-ATX",  HasGlassPanel = true });
+        products.Add(new Case { Id = 403, Name = "NZXT H5 Flow", Brand = "NZXT", Price = 3800, FormFactor = "ATX", HasGlassPanel = true });
         // Yeni Eklenenler
-        products.Add(new Case { Id = 404, Name = "Lian Li O11 Dynamic Evo", Brand = "Lian Li", Price = 6500, FormFactor = "ATX", MaxGpuLength = 420, HasGlassPanel = true });
-        products.Add(new Case { Id = 405, Name = "Cooler Master MasterBox TD500", Brand = "Cooler Master", Price = 3400, FormFactor = "ATX", MaxGpuLength = 410, HasGlassPanel = true });
-        products.Add(new Case { Id = 406, Name = "DeepCool CH560 Digital", Brand = "DeepCool", Price = 4100, FormFactor = "ATX", MaxGpuLength = 380, HasGlassPanel = true });
-        products.Add(new Case { Id = 407, Name = "Asus Prime AP201", Brand = "Asus", Price = 3100, FormFactor = "Micro-ATX", MaxGpuLength = 338, HasGlassPanel = false }); // Mesh Panel
+        products.Add(new Case { Id = 404, Name = "Lian Li O11 Dynamic Evo", Brand = "Lian Li", Price = 6500, FormFactor = "ATX",  HasGlassPanel = true });
+        products.Add(new Case { Id = 405, Name = "Cooler Master MasterBox TD500", Brand = "Cooler Master", Price = 3400, FormFactor = "ATX",  HasGlassPanel = true });
+        products.Add(new Case { Id = 406, Name = "DeepCool CH560 Digital", Brand = "DeepCool", Price = 4100, FormFactor = "ATX", HasGlassPanel = true });
+        products.Add(new Case { Id = 407, Name = "Asus Prime AP201", Brand = "Asus", Price = 3100, FormFactor = "Micro-ATX", HasGlassPanel = false }); // Mesh Panel
 
         return products;
+
     }
 
     public List<CPU> GetCPUs() => GetAllProducts().OfType<CPU>().ToList();
@@ -167,4 +168,5 @@ public class ProductRepository
     public List<PowerSupply> GetPowerSupplies() => GetAllProducts().OfType<PowerSupply>().ToList();
     public List<Storage> GetStorages() => GetAllProducts().OfType<Storage>().ToList();
     public List<Case> GetCases() => GetAllProducts().OfType<Case>().ToList();
+    public List<PowerSupply> GetPSUs() => GetAllProducts().OfType<PowerSupply>().ToList();
 }

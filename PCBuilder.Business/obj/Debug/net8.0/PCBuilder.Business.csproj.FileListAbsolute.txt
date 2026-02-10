@@ -10,6 +10,7 @@ C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\ob
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.AssemblyInfoInputs.cache
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.AssemblyInfo.cs
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.csproj.CoreCompileInputs.cache
+C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.sourcelink.json
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilde.18CA7D85.Up2Date
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\PCBuilder.Business.dll
 C:\Users\PC\source\repos\SiparisTakip\PCBuilderApp.WinForm\PCBuilder.Business\obj\Debug\net8.0\refint\PCBuilder.Business.dll

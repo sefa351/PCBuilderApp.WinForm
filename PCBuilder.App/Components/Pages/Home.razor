@@ -262,6 +262,7 @@
         </div>
 
         <div class="col-lg-6">
+
             <div class="glass-panel p-4 h-100 position-relative">
                 <h4 class="section-title">🛒 Sistem Özeti</h4>
 
@@ -360,109 +361,110 @@
     decimal totalPrice = 0;
     string statusMessage = "Sistem Toplanıyor...";
     string statusClass = "alert-secondary";
-    bool isSystemComplete = false; // Sistem tamam mı kontrolü
-
-    // --- MODAL KONTROLÜ ---
+    bool isSystemComplete = false;
     bool showSuccessModal = false;
 
-    @inject SystemTransferService TransferService
-
+    // --- SAYFA AÇILIŞI ---
     protected override void OnInitialized()
     {
+        // 1. Temel Listeleri Yükle (Bunlar kimseye bağlı değil)
         cpuList = _service.GetCPUs();
         caseList = _service.GetCases();
         psuList = _service.GetPSUs();
         storageList = _service.GetStorages();
 
-        // 4. EĞER HAZIR SİSTEMDEN GELİNDİYSE (Transfer)
+        // 2. TRANSFER KONTROLÜ: Hazır sistemden mi geldik?
         if (TransferService.SelectedSystem != null)
         {
             var sys = TransferService.SelectedSystem;
 
-            // Manuel tetiklemeler
-            selectedCpu = sys.Cpu;
-            if (selectedCpu != null) mbList = _service.GetCompatibleMotherboards(selectedCpu!.Id);
+            // --- ZİNCİRLEME SEÇİM BAŞLIYOR ---
 
-            selectedMb = sys.Mb;
-            if (selectedMb != null)
+            // A) Önce İşlemciyi Bul ve Seç
+            if (sys.Cpu != null)
             {
-                ramList = _service.GetCompatibleRAMs(selectedMb!.Id);
-                gpuList = _service.GetCompatibleGPUs(selectedMb!.Id);
+                // Listemdeki ID ile eşleşeni buluyorum
+                selectedCpu = cpuList.FirstOrDefault(c => c.Id == sys.Cpu.Id);
+
+                // B) İşlemci seçildiyse ANAKART LİSTESİNİ doldur (Yoksa anakart seçemeyiz!)
+                if (selectedCpu != null)
+                {
+                    mbList = _service.GetCompatibleMotherboards(selectedCpu.Id);
+
+                    // C) Şimdi Anakartı Seç
+                    if (sys.Mb != null)
+                    {
+                        selectedMb = mbList.FirstOrDefault(m => m.Id == sys.Mb.Id);
+
+                        // D) Anakart seçildiyse RAM ve GPU LİSTELERİNİ doldur
+                        if (selectedMb != null)
+                        {
+                            ramList = _service.GetCompatibleRAMs(selectedMb.Id);
+                            gpuList = _service.GetCompatibleGPUs(selectedMb.Id);
+
+                            // E) Son olarak RAM ve Ekran Kartını Seç
+                            if (sys.Ram != null) selectedRam = ramList.FirstOrDefault(r => r.Id == sys.Ram.Id);
+                            if (sys.Gpu != null) selectedGpu = gpuList.FirstOrDefault(g => g.Id == sys.Gpu.Id);
+                        }
+                    }
+                }
             }
 
-            selectedRam = sys.Ram;
-            selectedGpu = sys.Gpu;
-            selectedPsu = sys.Psu;
-            selectedCase = sys.Case;       
-            selectedStorage = sys.Storage; 
-           
+            // F) Diğer bağımsız parçaları seç
+            if (sys.Storage != null) selectedStorage = storageList.FirstOrDefault(s => s.Id == sys.Storage.Id);
+            if (sys.Case != null) selectedCase = caseList.FirstOrDefault(c => c.Id == sys.Case.Id);
+            if (sys.Psu != null) selectedPsu = psuList.FirstOrDefault(p => p.Id == sys.Psu.Id);
 
-            TransferService.SelectedSystem = null; 
+            // G) Transfer verisini temizle (Sayfa yenilenince tekrar çalışmasın)
+            TransferService.SelectedSystem = null;
+        }
+
+        UpdateCart(); // Sepeti hesapla
+    }
+
+    // --- DİĞER FONKSİYONLAR (AYNEN KALIYOR) ---
+    void SubmitOrder() { showSuccessModal = true; }
+    void CloseModal() { showSuccessModal = false; }
+
+    void OnCpuChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1");
+        selectedCpu = cpuList.FirstOrDefault(c => c.Id == id);
+
+        // İşlemci değişince altındakileri sıfırla
+        selectedMb = null; selectedRam = null; selectedGpu = null;
+        mbList.Clear(); ramList.Clear(); gpuList.Clear();
+
+        if (selectedCpu != null) mbList = _service.GetCompatibleMotherboards(selectedCpu.Id);
+        UpdateCart();
+    }
+
+    void OnMbChanged(ChangeEventArgs e)
+    {
+        int id = int.Parse(e.Value?.ToString() ?? "-1");
+        selectedMb = mbList.FirstOrDefault(m => m.Id == id);
+
+        selectedRam = null; selectedGpu = null;
+        ramList.Clear(); gpuList.Clear();
+
+        if (selectedMb != null)
+        {
+            ramList = _service.GetCompatibleRAMs(selectedMb.Id);
+            gpuList = _service.GetCompatibleGPUs(selectedMb.Id);
         }
         UpdateCart();
     }
 
-    // --- BUTON TIKLAMA FONKSİYONLARI ---
-    void SubmitOrder()
-    {
-        // Butona basınca Modalı aç
-        showSuccessModal = true;
-    }
-
-    void CloseModal()
-    {
-        // Modalı kapat ve sayfayı yenile (veya sıfırla)
-        showSuccessModal = false;
-
-        // İstersen burada tüm seçimleri null yapıp sıfırlayabiliriz
-        // selectedCpu = null; selectedMb = null; ... UpdateCart();
-        // Ama şimdilik sadece kapatalım.
-    }
-
-    // --- DEĞİŞİM METOTLARI ---
-    void OnCpuChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedCpu = cpuList.FirstOrDefault(c => c.Id == id);
-        selectedMb = null; selectedRam = null; selectedGpu = null; selectedStorage = null; selectedCase = null; selectedPsu = null;
-        mbList.Clear(); ramList.Clear(); gpuList.Clear();
-        if (selectedCpu != null) mbList = _service.GetCompatibleMotherboards(selectedCpu.Id);
-        UpdateCart();
-    }
-    void OnMbChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedMb = mbList.FirstOrDefault(m => m.Id == id);
-        selectedRam = null; selectedGpu = null; selectedStorage = null; selectedCase = null; selectedPsu = null;
-        ramList.Clear(); gpuList.Clear();
-        if (selectedMb != null) { ramList = _service.GetCompatibleRAMs(selectedMb.Id); gpuList = _service.GetCompatibleGPUs(selectedMb.Id); }
-        UpdateCart();
-    }
-    void OnRamChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedRam = ramList.FirstOrDefault(r => r.Id == id); UpdateCart();
-    }
-    void OnGpuChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedGpu = gpuList.FirstOrDefault(g => g.Id == id);
-        selectedCase = null; selectedPsu = null; UpdateCart();
-    }
-    void OnStorageChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedStorage = storageList.FirstOrDefault(s => s.Id == id); UpdateCart();
-    }
-    void OnCaseChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedCase = caseList.FirstOrDefault(c => c.Id == id); UpdateCart();
-    }
-    void OnPsuChanged(ChangeEventArgs e)
-    {
-        int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedPsu = psuList.FirstOrDefault(p => p.Id == id); UpdateCart();
-    }
+    void OnRamChanged(ChangeEventArgs e) { int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedRam = ramList.FirstOrDefault(r => r.Id == id); UpdateCart(); }
+    void OnGpuChanged(ChangeEventArgs e) { int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedGpu = gpuList.FirstOrDefault(g => g.Id == id); UpdateCart(); }
+    void OnStorageChanged(ChangeEventArgs e) { int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedStorage = storageList.FirstOrDefault(s => s.Id == id); UpdateCart(); }
+    void OnCaseChanged(ChangeEventArgs e) { int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedCase = caseList.FirstOrDefault(c => c.Id == id); UpdateCart(); }
+    void OnPsuChanged(ChangeEventArgs e) { int id = int.Parse(e.Value?.ToString() ?? "-1"); selectedPsu = psuList.FirstOrDefault(p => p.Id == id); UpdateCart(); }
 
     void UpdateCart()
     {
         sepetLines.Clear(); totalPrice = 0; int totalTDP = 0;
-        statusMessage = "Sistem Toplanıyor..."; statusClass = "alert-secondary";
-        isSystemComplete = false;
+        statusMessage = "Sistem Toplanıyor..."; statusClass = "alert-secondary"; isSystemComplete = false;
 
         void AddToCart(string type, Product? p)
         {
@@ -480,45 +482,22 @@
 
         if (totalTDP > 0) totalTDP += 100;
 
-        // KONTROLLER
+        // Validasyonlar
         if (selectedCase != null && selectedMb != null && selectedCase.FormFactor == "Micro-ATX" && selectedMb.FormFactor == "ATX")
-        {
-            statusMessage = "⛔ HATA: ATX Anakart, Micro-ATX Kasaya Sığmaz!"; statusClass = "alert-danger"; return;
-        }
-        
+        { statusMessage = "⛔ HATA: ATX Anakart, Micro-ATX Kasaya Sığmaz!"; statusClass = "alert-danger"; return; }
+
         if (selectedMb != null && selectedStorage != null && selectedStorage.Type!.Contains("NVMe") && !selectedMb.HasM2Slot)
-        {
-            statusMessage = "⛔ HATA: Bu anakartta M.2 yuvası yok!"; statusClass = "alert-danger"; return;
-        }
-        if (selectedGpu != null && selectedGpu.Name.Contains("4090"))
-        {
-            int psuWatt = selectedPsu?.Wattage ?? 0;
-            if (psuWatt > 0 && psuWatt < 850)
-            {
-                statusMessage = "⛔ KRİTİK: RTX 4090 için en az 850W PSU gerekir!"; statusClass = "alert-danger"; return;
-            }
-        }
+        { statusMessage = "⛔ HATA: Bu anakartta M.2 yuvası yok!"; statusClass = "alert-danger"; return; }
 
         isSystemComplete = selectedCpu != null && selectedMb != null && selectedRam != null &&
                            selectedGpu != null && selectedStorage != null && selectedCase != null && selectedPsu != null;
 
-        if (!isSystemComplete)
+        if (isSystemComplete)
         {
-            statusMessage = $"Sistem Toplanıyor... (Tüketim: ~{totalTDP}W)"; statusClass = "alert-secondary";
-        }
-        else
-        {
-            if (selectedPsu is not null)
-            {
-                if (selectedPsu.Wattage >= totalTDP)
-                {
-                    statusMessage = $"✅ SİSTEM HAZIR! (Tüketim: {totalTDP}W / PSU: {selectedPsu!.Wattage}W)"; statusClass = "alert-success";
-                }
-                else
-                {
-                    statusMessage = $"⛔ GÜÇ YETERSİZ! ({totalTDP}W gerekli)"; statusClass = "alert-danger";
-                }
-            }
+            if (selectedPsu != null && selectedPsu.Wattage >= totalTDP)
+            { statusMessage = $"✅ SİSTEM HAZIR! ({totalTDP}W / {selectedPsu.Wattage}W)"; statusClass = "alert-success"; }
+            else
+            { statusMessage = $"⛔ GÜÇ YETERSİZ! ({totalTDP}W gerekli)"; statusClass = "alert-danger"; }
         }
     }
 }

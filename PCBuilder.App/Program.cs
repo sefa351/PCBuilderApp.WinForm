@@ -1,26 +1,35 @@
+using Microsoft.EntityFrameworkCore;
 using PCBuilder.App.Components;
-
+using PCBuilder.Business;
+using PCBuilder.DataAccess;         
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddDbContext<PCBuilderContext>(options =>
+    options.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=PCBuilderDB;Trusted_Connection=True;"));
+
 builder.Services.AddScoped<PCBuilder.Business.ProductService>();
+builder.Services.AddScoped<SystemTransferService>();
 
-builder.Services.AddSingleton<PCBuilder.Business.SystemTransferService>();
-
-// Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<PCBuilderContext>();
+    context.Database.EnsureCreated(); 
+    DbSeeder.Seed(context);           
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 

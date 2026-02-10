@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PCBuilder.DataAccess;
 
@@ -10,9 +11,11 @@ using PCBuilder.DataAccess;
 namespace PCBuilderDataAccess.Migrations
 {
     [DbContext(typeof(PCBuilderContext))]
-    partial class PCBuilderContextModelSnapshot : ModelSnapshot
+    [Migration("20260209231041_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,9 +228,6 @@ namespace PCBuilderDataAccess.Migrations
 
                     b.Property<int>("GpuId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("MbId")
                         .HasColumnType("int");

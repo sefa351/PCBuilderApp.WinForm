@@ -1,50 +1,60 @@
 ﻿using PCBuilder.Entities;
 using PCBuilder.DataAccess;
+using Microsoft.EntityFrameworkCore; 
 
 namespace PCBuilder.Business;
 
 public class ProductService
 {
-    private readonly ProductRepository _repository;
+    
+    private readonly PCBuilderContext _context;
 
-    public ProductService()
+    public ProductService(PCBuilderContext context)
     {
-        // Depoyu burada oluşturuyoruz
-        _repository = new ProductRepository();
+        _context = context;
     }
 
-   
-    public List<CPU> GetCPUs() => _repository.GetCPUs();
-    public List<Motherboard> GetMotherboards() => _repository.GetMotherboards();
-    public List<RAM> GetRAMs() => _repository.GetRAMs();
-    public List<GPU> GetGPUs() => _repository.GetGPUs();
-    public List<PowerSupply> GetPSUs() => _repository.GetPowerSupplies();
-    public List<Case> GetCases() => _repository.GetCases();
-    public List<Storage> GetStorages() => _repository.GetStorages();
-    public List<PrebuiltSystem> GetPrebuiltSystems() => _repository.GetPrebuiltSystems();
+    // VERİLER SQL'DEN GELİYOR 
+    public List<CPU> GetCPUs() => _context.CPUs.ToList();
+    public List<Motherboard> GetMotherboards() => _context.Motherboards.ToList();
+    public List<RAM> GetRAMs() => _context.RAMs.ToList();
+    public List<GPU> GetGPUs() => _context.GPUs.ToList();
+    public List<PowerSupply> GetPSUs() => _context.PowerSupplies.ToList();
+    public List<Case> GetCases() => _context.Cases.ToList();
+    public List<Storage> GetStorages() => _context.Storages.ToList();
+    public List<PrebuiltSystem> GetPrebuiltSystems()
+    {
+        return _context.PrebuiltSystems
+                       .Include(p => p.Cpu)      // İşlemciyi getir
+                       .Include(p => p.Mb)       // Anakartı getir
+                       .Include(p => p.Ram)      // RAM'i getir
+                       .Include(p => p.Gpu)      // Ekran Kartını getir
+                       .Include(p => p.Psu)      // PSU'yu getir
+                       .Include(p => p.Storage)  // SSD'yi getir
+                       .Include(p => p.Case)     // Kasayı getir
+                       .ToList();
+    }
+
+
     public List<Motherboard> GetCompatibleMotherboards(int cpuId)
     {
-        var cpu = GetCPUs().FirstOrDefault(c => c.Id == cpuId);
-        if (cpu == null) return new List<Motherboard>();
+        var cpu = _context.CPUs.FirstOrDefault(c => c.Id == cpuId);
+        if (cpu is null) return new();
 
-      
-        return GetMotherboards().Where(m => m.SocketType == cpu.SocketType).ToList();
+        return _context.Motherboards
+                       .Where(m => m.SocketType == cpu.SocketType)
+                       .ToList();
     }
 
-    // 2. Anakarta uygun RAM'leri getir
     public List<RAM> GetCompatibleRAMs(int mbId)
     {
-        var mb = GetMotherboards().FirstOrDefault(m => m.Id == mbId);
-        if (mb == null) return new List<RAM>();
+        var mb = _context.Motherboards.FirstOrDefault(m => m.Id == mbId);
+        if (mb is null) return new();
 
-        // DDR4 ise sadece DDR4 RAM'leri getir
-        return GetRAMs().Where(r => r.MemoryType == mb.RamType).ToList();
+        return _context.RAMs
+                       .Where(r => r.MemoryType == mb.RamType)
+                       .ToList();
     }
 
-    // 3. Anakarta uygun Ekran Kartlarını getir
-    public List<GPU> GetCompatibleGPUs(int mbId)
-    {
-        // Şimdilik hepsi uyumlu (PCIe standarttır)
-        return GetGPUs();
-    }
+    public List<GPU> GetCompatibleGPUs(int mbId) => _context.GPUs.ToList();
 }
