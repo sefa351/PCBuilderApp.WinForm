@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PCBuilder.App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d234e63bb7da21679e0aa4a2568fb1e9483bdd6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88d475bdd47dcf4938794362610a65ea65098186")]
 [assembly: System.Reflection.AssemblyProductAttribute("PCBuilder.App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PCBuilder.App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -8,14 +8,9 @@
 <PageTitle>PC Toplama Sihirbazı</PageTitle>
 
 <style>
-    /* --- 1. GENEL TASARIM --- */
-    body {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        color: #e0e0e0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+   
 
-    /* --- 2. GLASS PANEL (CAM EFEKTİ) --- */
+    /*   PANEL  */
     .glass-panel {
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
@@ -103,7 +98,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.85); /* Arka planı karart */
+        background: rgba(0, 0, 0, 0.85); 
         backdrop-filter: blur(5px);
         display: flex;
         justify-content: center;
@@ -364,45 +359,44 @@
     bool isSystemComplete = false;
     bool showSuccessModal = false;
 
-    // --- SAYFA AÇILIŞI ---
+  
     protected override void OnInitialized()
     {
-        // 1. Temel Listeleri Yükle (Bunlar kimseye bağlı değil)
         cpuList = _service.GetCPUs();
         caseList = _service.GetCases();
         psuList = _service.GetPSUs();
         storageList = _service.GetStorages();
 
-        // 2. TRANSFER KONTROLÜ: Hazır sistemden mi geldik?
+    
         if (TransferService.SelectedSystem != null)
         {
             var sys = TransferService.SelectedSystem;
 
-            // --- ZİNCİRLEME SEÇİM BAŞLIYOR ---
+        
 
-            // A) Önce İşlemciyi Bul ve Seç
+            //  Önce İşlemciyi Bul ve Seç
             if (sys.Cpu != null)
             {
-                // Listemdeki ID ile eşleşeni buluyorum
+               
                 selectedCpu = cpuList.FirstOrDefault(c => c.Id == sys.Cpu.Id);
 
-                // B) İşlemci seçildiyse ANAKART LİSTESİNİ doldur (Yoksa anakart seçemeyiz!)
+                //  İşlemci seçildiyse ANAKART LİSTESİNİ doldur (Yoksa anakart seçemeyiz!)
                 if (selectedCpu != null)
                 {
                     mbList = _service.GetCompatibleMotherboards(selectedCpu.Id);
 
-                    // C) Şimdi Anakartı Seç
+                    //  Şimdi Anakartı Seç
                     if (sys.Mb != null)
                     {
                         selectedMb = mbList.FirstOrDefault(m => m.Id == sys.Mb.Id);
 
-                        // D) Anakart seçildiyse RAM ve GPU LİSTELERİNİ doldur
+                        //  Anakart seçildiyse RAM ve GPU LİSTELERİNİ doldur
                         if (selectedMb != null)
                         {
                             ramList = _service.GetCompatibleRAMs(selectedMb.Id);
                             gpuList = _service.GetCompatibleGPUs(selectedMb.Id);
 
-                            // E) Son olarak RAM ve Ekran Kartını Seç
+                            //  Son olarak RAM ve Ekran Kartını Seç
                             if (sys.Ram != null) selectedRam = ramList.FirstOrDefault(r => r.Id == sys.Ram.Id);
                             if (sys.Gpu != null) selectedGpu = gpuList.FirstOrDefault(g => g.Id == sys.Gpu.Id);
                         }
@@ -410,12 +404,12 @@
                 }
             }
 
-            // F) Diğer bağımsız parçaları seç
+            //  Diğer bağımsız parçaları seç
             if (sys.Storage != null) selectedStorage = storageList.FirstOrDefault(s => s.Id == sys.Storage.Id);
             if (sys.Case != null) selectedCase = caseList.FirstOrDefault(c => c.Id == sys.Case.Id);
             if (sys.Psu != null) selectedPsu = psuList.FirstOrDefault(p => p.Id == sys.Psu.Id);
 
-            // G) Transfer verisini temizle (Sayfa yenilenince tekrar çalışmasın)
+         
             TransferService.SelectedSystem = null;
         }
 
